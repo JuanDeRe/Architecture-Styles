@@ -23,6 +23,6 @@ public class Classroom {
 
     @Override
     public String toString(){
-        return getId() + " -> " + (isOccupied() ? "Occupied" : "Free");
+        return getId() + " -> " + (isOccupied() ? "Ocupado" : "Libre");
     }
 }

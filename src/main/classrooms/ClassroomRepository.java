@@ -1,5 +1,6 @@
 package main.classrooms;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,6 @@ public class ClassroomRepository {
         return classrooms.get(id);
     }
     public List<Classroom> getAll(){
-        return (List<Classroom>) classrooms.values();
+        return new ArrayList<>(classrooms.values());
     }
 }

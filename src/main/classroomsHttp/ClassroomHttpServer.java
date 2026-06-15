@@ -9,6 +9,7 @@ import main.classrooms.ClassroomRepository;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 
 public class ClassroomHttpServer {
     public static void main(String[] args) throws Exception{
@@ -31,9 +32,9 @@ public class ClassroomHttpServer {
 
         @Override
         public void handle(HttpExchange exchange) throws IOException {
-            try{
+            try {
                 String query = exchange.getRequestURI().getQuery();
-                String response = processQuery(query,exchange);
+                String response = processQuery(query, exchange);
                 OutputStream os = exchange.getResponseBody();
                 os.write(response.getBytes());
                 os.close();
@@ -44,25 +45,31 @@ public class ClassroomHttpServer {
 
         private String processQuery(String query, HttpExchange exchange) throws IOException {
             String response;
-            if(query == null){
-                response =  repository.getAll().toString();
-                exchange.sendResponseHeaders(200,response.length());
+            if (!exchange.getRequestMethod().equalsIgnoreCase("GET")) {
+                response = "Método no permitido";
+                exchange.sendResponseHeaders(405, response.getBytes().length);
                 return response;
             }
-            if(!query.startsWith("id=") || !exchange.getRequestMethod().equalsIgnoreCase("GET")){
-                response = "Petición no valida";
-                exchange.sendResponseHeaders(500,response.length());
+            if (query == null || query.isBlank()) {
+                response = repository.getAll().toString();
+                System.out.println(response);
+                exchange.sendResponseHeaders(200, response.getBytes().length);
+                return response;
+            }
+            if (!query.startsWith("id=")) {
+                response = "Petición no válida";
+                exchange.sendResponseHeaders(400, response.getBytes().length);
                 return response;
             }
             String roomId = query.split("=")[1];
             Classroom classroom = repository.findById(roomId);
-            if (classroom == null){
+            if (classroom == null) {
                 response = "Salón no encontrado";
-                exchange.sendResponseHeaders(400,response.length());
+                exchange.sendResponseHeaders(404, response.getBytes().length);
                 return response;
             }
             response = classroom.toString();
-            exchange.sendResponseHeaders(200, response.length());
+            exchange.sendResponseHeaders(200, response.getBytes().length);
             return response;
         }
     }
@@ -88,24 +95,24 @@ public class ClassroomHttpServer {
             String response;
             if( query == null || !query.startsWith("id=") || !exchange.getRequestMethod().equalsIgnoreCase("POST")){
                 response = "Petición no valida";
-                exchange.sendResponseHeaders(500,response.length());
+                exchange.sendResponseHeaders(500,response.getBytes(StandardCharsets.UTF_8).length);
                 return response;
             }
             String roomId = query.split("=")[1];
             Classroom classroom = repository.findById(roomId);
             if (classroom == null){
                 response = "Salón no encontrado";
-                exchange.sendResponseHeaders(400,response.length());
+                exchange.sendResponseHeaders(400,response.getBytes(StandardCharsets.UTF_8).length);
                 return response;
             }
             if (classroom.isOccupied()){
                 response = "Salón ya reservado";
-                exchange.sendResponseHeaders(501,response.length());
+                exchange.sendResponseHeaders(200,response.getBytes(StandardCharsets.UTF_8).length);
                 return response;
             }
             classroom.setOccupied();
             response = classroom.getId() + " ahora reservado!";
-            exchange.sendResponseHeaders(200, response.length());
+            exchange.sendResponseHeaders(200, response.getBytes(StandardCharsets.UTF_8).length);
             return response;
         }
     }
@@ -130,19 +137,19 @@ public class ClassroomHttpServer {
             String response;
             if( query == null || !query.startsWith("id=") || !exchange.getRequestMethod().equalsIgnoreCase("POST")){
                 response = "Petición no valida";
-                exchange.sendResponseHeaders(500,response.length());
+                exchange.sendResponseHeaders(500,response.getBytes(StandardCharsets.UTF_8).length);
                 return response;
             }
             String roomId = query.split("=")[1];
             Classroom classroom = repository.findById(roomId);
             if (classroom == null){
                 response = "Salón no encontrado";
-                exchange.sendResponseHeaders(400,response.length());
+                exchange.sendResponseHeaders(400,response.getBytes(StandardCharsets.UTF_8).length);
                 return response;
             }
             classroom.free();
             response = classroom.getId() + " ahora libre!";
-            exchange.sendResponseHeaders(200, response.length());
+            exchange.sendResponseHeaders(200, response.getBytes(StandardCharsets.UTF_8).length);
             return response;
         }
     }
