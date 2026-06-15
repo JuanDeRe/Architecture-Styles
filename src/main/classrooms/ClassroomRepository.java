@@ -1,6 +1,7 @@
 package main.classrooms;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ClassroomRepository {
@@ -14,5 +15,8 @@ public class ClassroomRepository {
     }
     public Classroom findById(String id) {
         return classrooms.get(id);
+    }
+    public List<Classroom> getAll(){
+        return (List<Classroom>) classrooms.values();
     }
 }

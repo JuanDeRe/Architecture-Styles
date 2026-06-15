@@ -20,4 +20,9 @@ public class Classroom {
     public void free() {
         this.occupied = false;
     }
+
+    @Override
+    public String toString(){
+        return getId() + " -> " + (isOccupied() ? "Occupied" : "Free");
+    }
 }
