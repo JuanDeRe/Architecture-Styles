@@ -14,3 +14,5 @@ ARSW Lab
 ![roomhttp3](docs/images/classroomsHttp3.png)
 
 ![roomhttp4](docs/images/classroomsHttp4.png)
+
+![labrpc](docs/images/labEquipment.png)
