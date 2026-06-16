@@ -22,3 +22,5 @@ ARSW Lab
 ![micro1](docs/images/micro1.png)
 
 ![micro2](docs/images/micro2.png)
+
+![apigateway](docs/images/gateway.png)
