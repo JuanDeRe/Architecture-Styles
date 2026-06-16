@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "edu.eci.arsw.bienestar";
+option java_outer_classname = "AppointmentProto";
+
+service AppointmentService {
+  rpc RequestAppointment (AppointmentRequest) returns (AppointmentResponse);
+  rpc CancelAppointment (CancelRequest) returns (CancelResponse);
+  rpc GetAppointments (StudentRequest) returns (AppointmentList);
+}
+
+enum AppointmentStatus {
+  APPOINTMENT_STATUS_UNSPECIFIED = 0;
+  APPOINTMENT_REQUESTED = 1;
+  APPOINTMENT_CANCELLED = 2;
+}
+
+message AppointmentRequest {
+  string studentId = 1;
+  string serviceType = 2;
+  string date = 3;
+}
+
+message AppointmentResponse {
+  string id = 1;
+  string studentId = 2;
+  string serviceType = 3;
+  string date = 4;
+  AppointmentStatus status = 5;
+}
+
+message CancelRequest {
+  string appointmentId = 1;
+}
+
+message CancelResponse {
+  string appointmentId = 1;
+  AppointmentStatus status = 2;
+}
+
+message StudentRequest {
+  string studentId = 1;
+}
+
+message AppointmentList {
+  repeated AppointmentResponse appointments = 1;
+}

@@ -18,3 +18,7 @@ ARSW Lab
 ![labrpc](docs/images/labEquipment.png)
 
 ![grpc](docs/images/grpc.png)
+
+![micro1](docs/images/micro1.png)
+
+![micro2](docs/images/micro2.png)
