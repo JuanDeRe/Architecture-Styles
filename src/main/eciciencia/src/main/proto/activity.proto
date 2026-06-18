@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "edu.eci.arsw.eciciencia";
+option java_outer_classname = "ActivityProto";
+
+service ActivityService {
+  rpc GetAgenda (GetAgendaRequest) returns (ActivityList);
+  rpc GetActivitiesByTimeSlot (TimeSlotRequest) returns (ActivityList);
+  rpc GetActivity (ActivityRequest) returns (ActivityResponse);
+  rpc CheckAndOccupySlot (CapacityRequest) returns (CapacityResponse);
+}
+
+message GetAgendaRequest {
+}
+
+message TimeSlotRequest {
+  string date = 1;
+  string startTime = 2;
+  string endTime = 3;
+}
+
+message ActivityRequest {
+  string activityId = 1;
+}
+
+message ActivityList {
+  repeated ActivityResponse activities = 1;
+}
+
+message ActivityResponse {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  ActivityType type = 4;
+  string date = 5;
+  string startTime = 6;
+  string endTime = 7;
+  string location = 8;
+  int32 capacity = 9;
+  int32 occupiedSlots = 10;
+}
+
+message CapacityRequest {
+  string activityId = 1;
+}
+
+message CapacityResponse {
+  string activityId = 1;
+  bool available = 2;
+  int32 capacity = 3;
+  int32 occupiedSlots = 4;
+  string message = 5;
+}
+
+enum ActivityType {
+  ACTIVITY_TYPE_UNSPECIFIED = 0;
+  TALK = 1;
+  WORKSHOP = 2;
+  TECHNOLOGY_EXPERIENCE = 3;
+  CONFERENCE = 4;
+}

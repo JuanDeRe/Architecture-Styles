@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "edu.eci.arsw.eciciencia";
+option java_outer_classname = "RegistrationProto";
+
+service RegistrationService {
+  rpc RegisterAttendee (RegisterAttendeeRequest) returns (AttendeeResponse);
+  rpc BookActivity (BookActivityRequest) returns (BookActivityResponse);
+  rpc GetAttendeeRegistrations (AttendeeRequest) returns (RegistrationList);
+}
+
+message RegisterAttendeeRequest {
+  string name = 1;
+  string email = 2;
+  string institutionalCode = 3;
+}
+
+message AttendeeRequest {
+  string attendeeId = 1;
+}
+
+message AttendeeResponse {
+  string attendeeId = 1;
+  string name = 2;
+  string email = 3;
+  string institutionalCode = 4;
+  bool registered = 5;
+  string message = 6;
+}
+
+message BookActivityRequest {
+  string attendeeId = 1;
+  string activityId = 2;
+}
+
+message BookActivityResponse {
+  string registrationId = 1;
+  string attendeeId = 2;
+  string activityId = 3;
+  RegistrationStatus status = 4;
+  string message = 5;
+}
+
+message RegistrationList {
+  repeated BookActivityResponse registrations = 1;
+}
+
+enum RegistrationStatus {
+  REGISTRATION_STATUS_UNSPECIFIED = 0;
+  RESERVED = 1;
+  REJECTED = 2;
+}
