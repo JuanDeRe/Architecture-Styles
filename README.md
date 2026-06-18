@@ -155,6 +155,61 @@ Evidence:
 
 This part showed the main purpose of an API Gateway: reducing the coupling between the client and the internal microservices.
 
+## 7. Final Integrator Exercise - ECICIENCIA Platform
+
+For the final exercise, I designed a distributed architecture for the ECICIENCIA event platform.
+
+The goal of this part was not to implement a very large system, but to propose a clear microservice-based solution using the architecture styles studied during the lab.
+
+The platform supports basic operations such as:
+
+- Register attendees
+- Consult the event agenda
+- Consult activities by time slot
+- Book a spot in an activity or workshop
+- Control the capacity of activities
+
+For this exercise, I decided to keep the architecture simple and avoid creating too many services without a clear reason.
+
+The implemented microservices were:
+
+- ActivityService: manages the agenda, activities, schedules, activity types, locations, and capacity.
+- RegistrationService: manages attendee registration and activity bookings.
+
+A simple gateway was also implemented to centralize the access from the client.
+
+The final structure is:
+
+- EcicienciaClient: shows the menu and reads user input.
+- EcicienciaGateway: connects to the internal services and hides their details from the client.
+- ActivityService: runs on port 50051.
+- RegistrationService: runs on port 50052.
+
+The client does not connect directly to the microservices. Instead, it uses the gateway, and the gateway communicates with the services.
+
+The main operations implemented were:
+
+- Register an attendee
+- Get the full agenda
+- Get activities by time slot
+- Get activity information by ID
+- Book an activity
+- Get the activities booked by an attendee
+
+Evidence:
+
+![eciciencia1](docs/images/eciciencia1.png)
+
+![eciciencia2](docs/images/eciciencia2.png)
+
+![eciciencia3](docs/images/eciciencia3.png)
+
+This final exercise helped me understand that microservices should not be separated just for the sake of having many services. In this case, two services were enough to represent the main responsibilities of the system.
+
+ActivityService owns the event activities and their capacity, while RegistrationService owns attendees and bookings. This keeps the system understandable and avoids unnecessary communication between many services.
+
+The Gateway also helps reduce coupling because the client does not need to know the ports or internal contracts of each service.
+
 ## General reflection
 
 This lab shows how distributed architectures evolve depending on the problem being solved.
