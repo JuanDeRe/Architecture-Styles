@@ -185,6 +185,10 @@ The final structure is:
 - ActivityService: runs on port 50051.
 - RegistrationService: runs on port 50052.
 
+Architecture Diagram:
+
+![uml](docs/images/eciUml.png)
+
 The client does not connect directly to the microservices. Instead, it uses the gateway, and the gateway communicates with the services.
 
 The main operations implemented were:
@@ -198,17 +202,144 @@ The main operations implemented were:
 
 Evidence:
 
-![eciciencia1](docs/images/eciciencia1.png)
+![eciciencia1](docs/images/eci1.png)
 
-![eciciencia2](docs/images/eciciencia2.png)
+![eciciencia2](docs/images/eci2.png)
 
-![eciciencia3](docs/images/eciciencia3.png)
+![eciciencia3](docs/images/eci3.png)
+
+![eciciencia4](docs/images/eci4.png)
+
+![eciciencia5](docs/images/eci5.png)
+
 
 This final exercise helped me understand that microservices should not be separated just for the sake of having many services. In this case, two services were enough to represent the main responsibilities of the system.
 
 ActivityService owns the event activities and their capacity, while RegistrationService owns attendees and bookings. This keeps the system understandable and avoids unnecessary communication between many services.
 
 The Gateway also helps reduce coupling because the client does not need to know the ports or internal contracts of each service.
+
+## Reflection Questions
+
+### TCP Sockets - Classroom System
+
+**How easy would it be to add a new operation to the protocol?**
+
+It would be possible, but not very clean. Since the protocol is based on manually written text commands, every new operation requires changing both the client and the server. For example, if I wanted to add a new command like LISTAR_SALONES, I would have to define the exact text format, update the server validation, and also update the client to send that command correctly.
+
+**What happens if two clients try to reserve the same classroom at the same time?**
+
+There could be a race condition. If both clients check the classroom state before one of them updates it, both could think the classroom is available. To avoid this, the reservation operation should be synchronized or protected so only one client can reserve the same classroom at a time.
+
+**Where is the communication contract really defined: in a formal file or in text conventions?**
+
+The contract is defined only by text conventions. There is no formal file that describes the protocol. The client and server must agree manually on commands like CONSULTAR_SALON,E303 or RESERVAR_SALON,E303.
+
+---
+
+### HTTP - Classroom System
+
+**What advantages does HTTP offer compared to a manually defined text protocol?**
+
+HTTP gives a more standard structure for communication. Instead of inventing commands manually, the system can use methods, paths, query parameters, and response codes. It is also easier to test with tools like Postman, curl, or a browser.
+
+**What limitations does building an HTTP server without a framework have?**
+
+Without a framework, many things must be handled manually, such as routing, query parameters, response headers, status codes, and error handling. This is useful for learning, but it can become difficult to maintain if the application grows.
+
+**How would this solution change if JSON were used instead of HTML?**
+
+Using JSON would make the service easier to consume from other applications. Instead of returning text or HTML for humans, the server would return structured data that could be used by web clients, mobile apps, or other services.
+
+---
+
+### Java RMI - Laboratory Inventory
+
+**What changed when moving from HTTP to RMI?**
+
+The communication changed from routes and HTTP requests to remote method calls. With RMI, the client calls methods from a remote Java object, so the interaction feels closer to calling a normal Java interface.
+
+**Where is the communication contract defined?**
+
+The contract is defined in the remote Java interface. The methods available to the client, their parameters, and their return types are described in that interface.
+
+**What problems would this system have if a client is not written in Java?**
+
+The main problem is interoperability. RMI is strongly tied to Java, so a client written in another language would have difficulty consuming the service directly.
+
+---
+
+### gRPC - Wellness Appointment System
+
+**Why is the .proto file considered a contract?**
+
+The .proto file is considered a contract because it defines the services, methods, request messages, response messages, and data types used between the client and the server. Both sides must follow that definition.
+
+**How easy would it be to create a client in another language?**
+
+It would be easier than with RMI because gRPC supports multiple languages. As long as the client has the same .proto file, it can generate the required classes and communicate with the service.
+
+**What differences do you find between RMI and gRPC?**
+
+RMI is based on Java remote interfaces and works mainly inside the Java ecosystem. gRPC uses Protocol Buffers and .proto files, which makes the contract more formal and allows clients and servers to be implemented in different programming languages.
+
+---
+
+### Microservices - Wellness System
+
+**Why did you decide to separate those services and not others?**
+
+I separated the wellness system into AppointmentService and GymService because they represent different responsibilities. Appointments and gym reservations have different rules and data, so keeping them separate makes the design clearer without creating too many services.
+
+**What data belongs to each service?**
+
+AppointmentService owns the appointment data, such as appointment ID, student ID, service type, date, and status.
+
+GymService owns the gym reservation data, such as reservation ID, student ID, date, hour, and reservation status.
+
+**What risk appears when the client knows all the services?**
+
+The client becomes coupled to the internal architecture. It needs to know the ports, addresses, and contracts of every service. If a service changes location or port, the client must also change.
+
+---
+
+### API Gateway - Wellness Gateway
+
+**What does the Gateway simplify for the client?**
+
+The Gateway gives the client a single entry point. The client does not need to know the address or port of each internal service. It only interacts with the Gateway.
+
+**What complexity does it add to the system?**
+
+The Gateway adds another component that must be maintained. It also needs to communicate with internal services and handle possible errors from them. If it is not designed carefully, it can become a central point of failure.
+
+**What would happen if the Gateway starts containing too much business logic?**
+
+If the Gateway contains too much business logic, it can become a monolith in the middle of the system. The services would lose responsibility, and the Gateway would become harder to maintain and change.
+
+---
+
+### Final Integrator Exercise - ECICIENCIA Platform
+
+**Why not use a single monolithic service for everything?**
+
+A single monolithic service would be easier to implement at the beginning, but it would mix different responsibilities in the same place. The system would have to manage agenda information, attendees, bookings, and capacity in one component.
+
+For the final design, I separated the platform into ActivityService and RegistrationService. This keeps the architecture simple while still separating the most important responsibilities.
+
+ActivityService manages the agenda, activities, schedules, activity types, locations, and capacity.
+
+RegistrationService manages attendees and activity bookings.
+
+This separation avoids creating too many microservices without a clear reason, but still makes the system easier to understand and evolve.
+
+**What role does the Gateway play in the ECICIENCIA platform?**
+
+The Gateway acts as the entry point for the client. The client uses the Gateway instead of connecting directly to ActivityService and RegistrationService. This reduces coupling because the client does not need to know the internal ports or service details.
+
+**What is the main trade-off of this architecture?**
+
+The main advantage is that responsibilities are clearer and the client is less coupled to the internal services. The main disadvantage is that the system becomes more complex than a single application because it has multiple services, gRPC contracts, and communication between components.
 
 ## General reflection
 
